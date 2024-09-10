@@ -1,0 +1,139 @@
+
+
+<% layout('layouts/boilerplate') %>
+<link rel="stylesheet" href="/stylesheets/stars.css">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
+<div class="row mb-3" >
+<div class="col-12 col-md-6">
+    <p class="fs-3 fw-bold"><%= camp.title %></p>
+    <p class="fs-5 fw-medium">
+        <%= camp.location %>
+    </p>
+    <p class="fs-5 fw-medium">Created By: <%= camp.author.username %></p>
+    <h1> </h1>
+    <!-- <img src="<%= camp.image %>">   -->
+    
+    <div id="map" style="width: 100%; height: 300px;"></div>
+    
+
+    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            
+                <% camp.images.forEach((img, i) => { %>
+                    <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+                      <img src="<%= img.url %>" class="d-block w-100">
+                    </div>
+                <% }) %>
+            
+        </div>
+        <% if (camp.images.length > 1) {%>
+         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+         </button>
+         <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+         </button>
+        <% } %>
+    </div>
+
+
+
+    <h1> </h1>  
+    <h6>
+        <%= camp.description %>
+    </h6>
+    <h4>
+        Price: <%= camp.price %>
+    </h4>
+    <h1> </h1>
+    <% if(currentUser && camp.author.equals(currentUser)) {%>
+    <a href="/campgrounds/<%= camp._id %>/edit"><button class="btn btn-primary">Edit Campground</button></a>
+    <h1> </h1>
+    <form action="/campgrounds/<%= camp._id %>/?_method=delete" method="post">
+        <button class="btn btn-danger">Delete</button>
+    </form>
+    <h1> </h1>
+    <% } %>
+    <a href="/campgrounds"><button class="btn btn-dark">Back to Home</button></a>
+  </div>
+
+
+  <div class="col-12 col-md-6">
+    <p class="fs-5 fw-bold">Leave a review: </p>
+    <form action="/campgrounds/<%= camp._id %>/reviews" method="post" class="mb-3 needs-validation" novalidate>
+        <div>
+            <!-- <label class="form-label" for="rating">Rating: </label> -->
+            <!-- <input class="form-range" type="range" min="1" max="5" name="review[rating]" id="rating" required> -->
+            <fieldset class="starability-basic">
+                <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+                <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                <label for="first-rate1" title="Terrible">1 star</label>
+                <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                <label for="first-rate2" title="Not good">2 stars</label>
+                <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                <label for="first-rate3" title="Average">3 stars</label>
+                <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                <label for="first-rate4" title="Very good">4 stars</label>
+                <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                <label for="first-rate5" title="Amazing">5 stars</label>
+            </fieldset>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="body">Review: </label>
+            <textarea id="body" name="review[body]" class="form-control" required></textarea>
+            <div class="valid-feedback">
+                looks good!
+            </div>
+        </div>
+        <button class="btn btn-success">Submit my Review</button>
+    </form>
+    
+    <p class="fs-5 fw-bold">
+        <%= camp.title %> Reviews
+    </p>
+    <ul>
+        <% for(let review of camp.reviews){ %>
+            <div class="card-body mb-3">
+                <h4 class="card-title"><%= review.author.username %>
+                        </h4>
+                        <p class="starability-result" data-rating="<%= review.rating %>">
+                            Rated: 3 stars
+                        </p>
+                        <p class="card-body">
+                            <%= review.body %>
+                        </p>
+                    <% if(review.author.equals(currentUser)) {%>
+                    <form method="post" action="/campgrounds/<%= camp._id %>/reviews/<%= review._id %>?_method=delete">
+                          <button class="btn btn-danger">Delete Review</button>
+                    </form>
+                    <% } %>
+            </div>
+            <% } %>
+    </ul>
+  </div>
+ 
+</div>
+
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+
+<script>
+    const cp = JSON.parse('<%- JSON.stringify(camp) %>');
+    console.log(cp);
+    mapboxgl.accessToken = '<%-process.env.MAPBOX_TOKEN%>';
+    const map = new mapboxgl.Map({
+        container: 'map', // container ID
+        center: cp.geometry.coordinates, // starting position [lng, lat]. Note that lat must be set between -90 and 90
+        zoom: 9 // starting zoom
+    });
+    
+    map.addControl(new mapboxgl.NavigationControl());
+
+    new mapboxgl.Marker().setLngLat(cp.geometry.coordinates).setPopup(
+        new mapboxgl.Popup({offset: 25}).setHTML(
+            `<h3>${cp.title}</h3><p>${cp.location}</p>`
+        )
+    ).addTo(map);
+
+</script>

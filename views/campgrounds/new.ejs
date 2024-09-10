@@ -1,0 +1,56 @@
+<% layout('layouts/boilerplate') %>
+<div class="text-center">
+    <h2>Create new Campground</h2>
+</div>
+
+<div class="col-6 offset-3 mt-3 mb-5">
+    
+    <form action="/campgrounds" method="post" novalidate class="needs-validation" enctype="multipart/form-data">
+        <div class="row mb-3">
+             <label class="col-md-3" for="title">Title:</label>
+             <input class="col-md-8 form-control" type="text" id="title" name="campground[title]" required autofocus>
+             <div class="valid-feedback">looks good</div>
+        </div>
+         
+        <div class="row mb-3">
+            <label class="col-md-3" for="location">Location:</label>
+            <input class="col-md-8 form-control" type="text" id="location" name="campground[location]" required>
+            <div class="valid-feedback">looks good</div>
+        </div>
+
+        <!-- <div class="row mb-3">
+            <label class="col-md-3" for="image">Image Url:</label>
+            <input class="col-md-8 form-control" type="text" id="image" name="campground[image]" required>
+            <div class="valid-feedback">looks good</div>
+        </div> -->
+
+
+        <div class="row mb-3">
+            <label for="image" class="form-label">Choose images</label>
+            <input class="form-control" type="file" name="image" id="image" multiple>
+        </div>
+
+        
+        <div class="row mb-3">
+            <label class="col-md-3" for="price">Price:</label>
+            <div class="input-group">
+                <span class="input-group-text" id="price-label">$</span>
+                <input class="form-control" type="text" id="price" name="campground[price]" aria-describedby="price-label"
+                    placeholder="0.00" required>
+                <div class="valid-feedback">looks good</div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-md-3" for="description">Description:</label>
+            <textarea class="col-md-8 form-control"  id="description" name="campground[description]" required></textarea>
+            <div class="valid-feedback">looks good</div>
+        </div>
+
+        <div class="d-grid gap-2">
+        <button class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>
+
+
